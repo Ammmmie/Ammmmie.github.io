@@ -3,427 +3,580 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>甘晓然的主页</title>
+    <title>Lando Style | Photo Gallery Edition (Float & Glitch)</title>
     <style>
-        /* 全局重置与变量 */
+
+        /* --- 1. 核心变量 (更新) --- */
         :root {
-            --bg-color: #0a0a0a;
+            --bg-color: #050505;
             --text-color: #ffffff;
-            --accent-color: #ccff00; /* 类似Lando的荧光绿 */
-            --secondary-text: #888888;
+            --accent-color: #ccff00; /* Neon Lime */
+            --secondary-text: #888;
+            --card-bg: #111;
             --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            --card-bg: #1a1a1a;
+            --section-gap: 12rem;
+            
+            /* 新增：霓虹光芒变量 (用于底部链接) */
+            --neon-color: var(--accent-color);
+            /* 初始微弱发光 */
+            --neon-shadow-initial: 0 0 .5px #fff, 0 0 1px var(--neon-color), 0 0 4px var(--neon-color);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* --- 2. 全局设置 --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; cursor: none; }
+        
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: var(--font-main);
-            line-height: 1.6;
             overflow-x: hidden;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-            transition: color 0.3s ease;
+        a { text-decoration: none; color: inherit; cursor: none; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
+
+        /* --- 3. Preloader --- */
+        .preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000;
+            display: flex; justify-content: center; align-items: center;
+            transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+        .preloader.hidden { transform: translateY(-100%); }
+        .preloader-counter {
+            font-size: clamp(5rem, 15vw, 12rem); font-weight: 900;
+            color: var(--accent-color); font-variant-numeric: tabular-nums;
         }
 
-        a:hover {
-            color: var(--accent-color);
+        /* --- 4. 自定义光标 --- */
+        .cursor-dot {
+            position: fixed; top: 0; left: 0; width: 8px; height: 8px;
+            background: var(--accent-color); border-radius: 50%;
+            pointer-events: none; z-index: 9999; transform: translate(-50%, -50%);
+        }
+        .cursor-circle {
+            position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+            border: 1px solid rgba(255,255,255,0.5); border-radius: 50%;
+            pointer-events: none; z-index: 9998; transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+        }
+        body.hovering .cursor-circle {
+            width: 70px; height: 70px;
+            background: rgba(204, 255, 0, 0.1); border-color: var(--accent-color);
         }
 
-        /* 导航栏 */
+        /* --- 5. 动画类 --- */
+        .reveal {
+            opacity: 0; transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* --- 6. 导航栏 (略) --- */
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 2rem 5%;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
+            position: fixed; top: 0; width: 100%; padding: 1.5rem 4rem;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
+        .logo { font-size: 1.2rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        .logo span { color: var(--accent-color); }
+        nav { display: flex; gap: 2rem; }
+        nav a { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: #bbb; transition: 0.3s; }
+        nav a:hover { color: var(--accent-color); }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -1px;
-        }
-
-        .logo span {
-            color: var(--accent-color);
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        nav ul li a {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-        }
-
-        /* 汉堡菜单 (移动端隐藏，此处简化处理) */
-        .menu-toggle {
-            display: none;
-        }
-
-        /* Hero 区域 */
+        /* --- 7. Hero 区域 (略) --- */
         .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 0 5%;
+            height: 100vh; padding: 0 4rem;
+            display: flex; flex-direction: column; justify-content: center;
             position: relative;
         }
-
         .hero h1 {
-            font-size: clamp(3rem, 10vw, 8rem); /* 响应式大字 */
-            line-height: 0.9;
-            text-transform: uppercase;
-            font-weight: 900;
-            margin-bottom: 1rem;
+            font-size: clamp(4rem, 11vw, 9rem); line-height: 0.9;
+            font-weight: 900; text-transform: uppercase; margin-bottom: 2rem;
         }
-
-        .hero h1 span {
-            display: block;
-            -webkit-text-stroke: 1px var(--text-color);
-            color: transparent;
-        }
-        
-        .hero h1 span.filled {
-            -webkit-text-stroke: 0;
-            color: var(--text-color);
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            color: var(--secondary-text);
-            max-width: 500px;
-            margin-bottom: 2rem;
-        }
-
+        .hero h1 span { display: block; }
+        .hero h1 span.stroke { -webkit-text-stroke: 1px #fff; color: transparent; }
+        .magnetic-wrap { display: inline-block; width: fit-content; margin-top: 2rem; }
         .btn {
-            display: inline-block;
-            padding: 1rem 2rem;
-            background-color: var(--accent-color);
-            color: #000;
-            font-weight: 800;
-            text-transform: uppercase;
-            border-radius: 50px; /* 胶囊形状 */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: inline-block; padding: 1.2rem 3rem;
+            background: var(--accent-color); color: #000;
+            font-weight: 800; border-radius: 50px; text-transform: uppercase;
+            transition: transform 0.2s ease;
         }
 
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(204, 255, 0, 0.4);
-            color: #000;
+        /* --- 8. 跑马灯 (略) --- */
+        .marquee-wrap {
+            background: var(--accent-color); padding: 1rem 0;
+            transform: rotate(-2deg) scale(1.05); margin: 2rem 0;
+            overflow: hidden; white-space: nowrap;
         }
+        .marquee-inner { display: inline-block; animation: scroll 20s linear infinite; }
+        .marquee-item { font-size: 1.5rem; font-weight: 900; text-transform: uppercase; color: #000; margin-right: 3rem; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* 滚动跑马灯 (类似 mclaren f1 since 2019) */
-        .marquee {
-            background-color: var(--accent-color);
-            color: #000;
-            padding: 1rem 0;
-            overflow: hidden;
-            white-space: nowrap;
-            transform: rotate(-2deg); /* 稍微倾斜增加动感 */
-            width: 105%;
-            margin-left: -2.5%;
-            margin-top: -50px;
-            margin-bottom: 50px;
+        /* --- 9. About 区域 (略) --- */
+        .about-section {
+            padding: var(--section-gap) 4rem;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
+            border-bottom: 1px solid #222;
         }
+        .big-quote { font-size: 2rem; font-weight: 800; line-height: 1.3; }
+        .stats { display: flex; gap: 3rem; margin-top: 3rem; }
+        .stat-item h4 { font-size: 3rem; color: var(--accent-color); margin-bottom: 0; line-height: 1; }
+        .stat-item p { color: #666; font-size: 0.8rem; text-transform: uppercase; }
+        .bio-text { color: #999; line-height: 1.8; font-size: 1.1rem; }
 
-        .marquee-content {
-            display: inline-block;
-            animation: marquee 20s linear infinite;
-            font-weight: 900;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-        }
-
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* 作品集部分 (Gallery/Grid) */
-        .section {
-            padding: 5rem 5%;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 3rem;
-            border-bottom: 1px solid #333;
-            padding-bottom: 1rem;
-        }
-
-        .section-title {
-            font-size: 3rem;
-            text-transform: uppercase;
-            font-weight: 800;
-        }
-
-        .section-subtitle {
-            color: var(--accent-color);
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
+        /* --- 10. 作品展示 (略) --- */
+        .work-section { padding: var(--section-gap) 4rem; }
+        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem; }
+        .section-title { font-size: 3rem; font-weight: 900; text-transform: uppercase; }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 4rem; row-gap: 6rem;
         }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            position: relative;
-            aspect-ratio: 4/5; /* 竖向比例，类似海报 */
+        .card { position: relative; cursor: pointer; }
+        .card:hover .card-title { color: var(--accent-color); }
+        .img-box {
+            width: 100%; aspect-ratio: 3/4;
+            overflow: hidden; background: #222; border-radius: 8px;
+            position: relative; margin-bottom: 1.5rem;
         }
-
-        .card:hover {
-            transform: translateY(-10px);
+        .parallax-img {
+            width: 100%; height: 120%;
+            object-fit: cover; position: absolute; top: 0; left: 0;
+            transition: transform 0.1s linear; transform: translateY(0);
+            filter: grayscale(100%);
         }
+        .card:hover .parallax-img { filter: grayscale(0%); transition: filter 0.3s; }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #333; padding-top: 1rem; }
+        .card-title { font-size: 1.5rem; font-weight: 700; text-transform: uppercase; transition: color 0.3s; }
+        .card-cat { font-size: 0.8rem; border: 1px solid #444; padding: 4px 12px; border-radius: 20px; color: #888; }
 
-        .card-image {
-            width: 100%;
-            height: 100%;
-            background-color: #333;
-            object-fit: cover;
-            /* 这里使用灰色占位，实际使用时替换为<img> */
-            background: linear-gradient(45deg, #222, #333);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #555;
-            font-size: 2rem;
+        /* --- 10.5 动画 Keyframes 定义 --- */
+        /* 浮动动画 Keyframes */
+        @keyframes float-anim {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-3px); } 
+            100% { transform: translateY(0); }
+        }
+        /* Glitch 故障动画 Keyframes (用于 Gallery Title) */
+        @keyframes glitch-fx {
+            0% { transform: skewX(0deg); }
+            25% { transform: skewX(5deg); text-shadow: 2px 0 var(--accent-color); }
+            50% { transform: skewX(-5deg); text-shadow: -2px 0 #00f; }
+            75% { transform: skewX(10deg); text-shadow: 4px 0 var(--accent-color); }
+            100% { transform: skewX(0deg); }
+        }
+        @keyframes glitch-layer {
+            0% { transform: translate(0); clip: rect(20px, 350px, 40px, 0); }
+            50% { transform: translate(-5px, 0); clip: rect(80px, 350px, 100px, 0); }
+            100% { transform: translate(5px, 0); clip: rect(40px, 350px, 60px, 0); }
         }
         
-        .card-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 1.5rem;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        /* ******************************************* */
+        /* --- 新增：霓虹静态闪烁动画 Keyframes (用于 Footer) --- */
+        /* 1. 整体发光和闪烁 */
+        @keyframes static-flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                /* 微弱的霓虹发光效果 */
+                text-shadow: var(--neon-shadow-initial);
+                opacity: 1;
+            }
+            20%, 24%, 55% {
+                /* 瞬间的暗淡/断电效果 */
+                text-shadow: none;
+                opacity: 0.8;
+            }
         }
-
-        .card:hover .card-overlay {
-            opacity: 1;
+        /* 2. 噪点切割效果 */
+        @keyframes noise-anim {
+            0% { clip: rect(20px, 9999px, 5px, 0); }
+            10% { clip: rect(10px, 9999px, 3px, 0); }
+            20% { clip: rect(50px, 9999px, 15px, 0); }
+            30% { clip: rect(70px, 9999px, 80px, 0); }
+            40% { clip: rect(30px, 9999px, 8px, 0); }
+            50% { clip: rect(80px, 9999px, 10px, 0); }
+            60% { clip: rect(10px, 9999px, 5px, 0); }
+            70% { clip: rect(40px, 9999px, 50px, 0); }
+            80% { clip: rect(25px, 9999px, 10px, 0); }
+            90% { clip: rect(60px, 9999px, 70px, 0); }
+            100% { clip: rect(5px, 9999px, 15px, 0); }
         }
+        /* ******************************************* */
 
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+
+        /* --- 11. 摄影作品展示区 (Gallery) (略) --- */
+        .gallery-section {
+            padding: var(--section-gap) 4rem;
+            border-top: 1px solid #222;
         }
-
-        .card-category {
-            color: var(--accent-color);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
-
-        /* 关于/简介部分 */
-        .about-section {
+        .gallery-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .big-quote {
-            font-size: 2.5rem;
-            font-weight: 800;
-            line-height: 1.2;
-        }
-
-        .about-text p {
-            margin-bottom: 1.5rem;
-            color: #ccc;
-        }
-
-        /* 页脚 */
-        footer {
-            padding: 5rem 5%;
-            border-top: 1px solid #333;
-            margin-top: 5rem;
-        }
-
-        .footer-content {
-            display: flex;
-            flex-direction: column;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
         }
-
-        .footer-links a {
-            display: block;
-            font-size: 4rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            line-height: 1;
-            color: #333;
-            -webkit-text-stroke: 1px #555;
-            transition: all 0.3s;
+        .gallery-item {
+            background-color: #0d0d0d; border: 1px solid #1a1a1a; overflow: hidden; position: relative;
+            animation: float-anim 4s ease-in-out infinite alternate; 
+            transition: all 0.3s ease;
+        }
+        .gallery-item:hover {
+            border-color: var(--accent-color); box-shadow: 0 0 10px rgba(204, 255, 0, 0.4);
+            animation-play-state: paused; transform: scale(1.02) translateY(0); 
+        }
+        .gallery-image-box {
+            width: 100%; aspect-ratio: 1/1; 
+            overflow: hidden;
+        }
+        .gallery-image-box img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .gallery-item:hover .gallery-image-box img {
+            transform: scale(1.08);
+        }
+        .gallery-info {
+            padding: 1rem; display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.9rem; text-transform: uppercase;
+        }
+        .gallery-title { 
+            font-weight: 700; position: relative; display: inline-block;
+        }
+        .gallery-year { color: var(--accent-color); }
+        /* --- 标题故障解码 (Glitch) CSS --- */
+        .gallery-item:hover .gallery-title {
+            animation: glitch-fx 0.5s infinite alternate; 
+            color: var(--text-color);
+        }
+        .gallery-item:hover .gallery-title::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; text-shadow: 1px 0 #ff00f1; z-index: 1;
+            animation: glitch-layer 1s steps(2, end) infinite alternate;
         }
 
-        .footer-links a:hover {
-            color: var(--accent-color);
-            -webkit-text-stroke: 0;
-            padding-left: 20px;
+
+        /* --- 12. 底部 (Footer) (更新) --- */
+        footer { padding: 5rem 4rem; background: #080808; text-align: center; }
+        
+        .footer-link {
+            font-size: clamp(2rem, 5vw, 5rem); font-weight: 900; text-transform: uppercase;
+            /* 默认非悬停状态：描边但没有发光 */
+            color: transparent; -webkit-text-stroke: 1px #666; 
+            transition: all 0.3s; display: block; margin-bottom: 1rem;
+            position: relative; /* 必须设置 relative 以定位伪元素 */
         }
 
-        .footer-bottom {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 3rem;
-            font-size: 0.8rem;
-            color: #666;
+        /* 基础悬停效果：霓虹色和闪烁动画 */
+        .footer-link:hover { 
+            color: var(--accent-color); 
+            -webkit-text-stroke: 0; 
+            transform: scale(1.05); 
+            /* 应用整体的闪烁发光效果 */
+            animation: static-flicker 1.5s infinite alternate; 
         }
 
-        /* 移动端适配 */
+        /* 伪元素：用于创建噪点层 */
+        .footer-link::before {
+            content: attr(data-text); /* 使用 data-text 属性的值作为内容 */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            /* 伪元素使用霓虹色笔触 */
+            color: transparent;
+            -webkit-text-stroke: 1px var(--accent-color); 
+            z-index: -1; 
+            transition: opacity 0.3s;
+            opacity: 0; /* 默认隐藏 */
+        }
+
+        /* 悬停时：激活噪点动画 */
+        .footer-link:hover::before {
+            opacity: 1; 
+            /* 噪点动画：通过随机剪切 (clip) 模拟画面错位和静态 */
+            animation: noise-anim 0.2s linear infinite alternate; 
+        }
+
+        /* --- 适配 (略) --- */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 3.5rem;
-            }
-            .about-section {
-                grid-template-columns: 1fr;
-            }
-            .footer-links a {
-                font-size: 2.5rem;
-            }
-            nav {
-                display: none; /* 简单隐藏，实际项目需做汉堡菜单 */
-            }
+            .cursor-dot, .cursor-circle { display: none; }
+            html { cursor: auto; }
+            header, .hero, .about-section, .work-section, .gallery-section, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .about-section { grid-template-columns: 1fr; gap: 3rem; }
+            .hero h1 { font-size: 3.5rem; }
         }
     </style>
 </head>
 <body>
 
+    <div class="preloader" id="preloader">
+        <div class="preloader-counter" id="counter">0%</div>
+    </div>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+
     <header>
-        <div class="logo">Design<span>.LN</span></div>
+        <div class="logo">Design<span style="color:var(--accent-color)">.Pro</span></div>
         <nav>
-            <ul>
-                <li><a href="#work">作品</a></li>
-                <li><a href="#about">关于</a></li>
-                <li><a href="#services">服务</a></li>
-                <li><a href="#contact">联系</a></li>
-            </ul>
+            <a href="#work" class="hover-trigger">Work</a>
+            <a href="#gallery" class="hover-trigger">Photo</a> 
+            <a href="#about" class="hover-trigger">About</a>
+            <a href="#contact" class="hover-trigger">Contact</a>
         </nav>
     </header>
 
     <section class="hero">
         <h1>
-            <span class="filled">Visual</span>
-            <span>Designer</span>
-            <span class="filled">& Art Director</span>
+            <span class="hacker-text hover-trigger" data-value="DIGITAL">DIGITAL</span>
+            <span class="stroke hacker-text hover-trigger" data-value="EXPERIENCE">EXPERIENCE</span>
+            <span class="hacker-text hover-trigger" data-value="DESIGNER">DESIGNER</span>
         </h1>
-        <p>专注于品牌体验、数字交互与视觉创新的设计师。目前常驻上海，服务全球。</p>
-        <a href="#work" class="btn">查看作品</a>
+        
+        <div class="magnetic-wrap">
+            <a href="#work" class="btn magnetic-btn hover-trigger">View Projects ↓</a>
+        </div>
     </section>
 
-    <div class="marquee">
-        <div class="marquee-content">
-            CREATING SINCE 2020 • UI/UX DESIGN • BRANDING • MOTION GRAPHICS • CREATING SINCE 2020 • UI/UX DESIGN • BRANDING • MOTION GRAPHICS • 
+    <div class="marquee-wrap">
+        <div class="marquee-inner">
+            <span class="marquee-item">Strategy • Branding • Web Design • Art Direction • Strategy • Branding • Web Design • Art Direction •</span>
+            <span class="marquee-item">Strategy • Branding • Web Design • Art Direction • Strategy • Branding • Web Design • Art Direction •</span>
         </div>
     </div>
 
-    <section id="work" class="section">
-        <div class="section-header">
-            <div>
-                <div class="section-subtitle">Selected Works</div>
-                <h2 class="section-title">精选案例</h2>
+    <section id="about" class="about-section reveal">
+        <div class="left">
+            <div class="big-quote">
+                "WE DON'T JUST DESIGN.<br>WE DEFINE <span style="color:var(--accent-color)">LEGACIES</span>."
             </div>
-            <a href="#" style="text-decoration: underline;">查看全部 →</a>
+            <div class="stats">
+                <div class="stat-item"><h4>05+</h4><p>Years Exp</p></div>
+                <div class="stat-item"><h4>32+</h4><p>Clients</p></div>
+                <div class="stat-item"><h4>12+</h4><p>Awards</p></div>
+            </div>
+        </div>
+        <div class="right">
+            <p class="bio-text">
+                专注创造具有视觉冲击力的品牌体验。就像 F1 赛车一样，我的设计追求极致的性能与美学的平衡。<br><br>
+                无论是构建复杂的设计系统，还是打造沉浸式的 Web 体验，我都致力于将混乱转化为清晰，将平庸转化为卓越。
+            </p>
+        </div>
+    </section>
+
+    <section id="work" class="work-section">
+        <div class="section-header reveal">
+            <h2 class="section-title">Selected Works</h2>
+            <a href="#" class="hover-trigger" style="border-bottom:1px solid #fff;">All Projects ↗</a>
         </div>
 
         <div class="grid">
-            <div class="card">
-                <div class="card-image">PROJECT 01</div> <div class="card-overlay">
-                    <div class="card-category">Branding</div>
-                    <h3 class="card-title">Neon Future</h3>
-                </div>
+            <div class="card reveal hover-trigger">
+                <div class="img-box"> <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=800&auto=format&fit=crop" class="parallax-img" alt="Project 1"> </div>
+                <div class="card-meta"> <div class="card-title hacker-text" data-value="NEON RACER">NEON RACER</div> <div class="card-cat">Branding</div> </div>
             </div>
-            <div class="card">
-                <div class="card-image">PROJECT 02</div>
-                <div class="card-overlay">
-                    <div class="card-category">Web Design</div>
-                    <h3 class="card-title">Dark Mode UI</h3>
-                </div>
+            <div class="card reveal hover-trigger">
+                <div class="img-box"> <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=800&auto=format&fit=crop" class="parallax-img" alt="Project 2"> </div>
+                <div class="card-meta"> <div class="card-title hacker-text" data-value="VOID UI">VOID UI</div> <div class="card-cat">Interface</div> </div>
             </div>
-            <div class="card">
-                <div class="card-image">PROJECT 03</div>
-                <div class="card-overlay">
-                    <div class="card-category">3D Art</div>
-                    <h3 class="card-title">Abstract Shapes</h3>
-                </div>
+            <div class="card reveal hover-trigger">
+                <div class="img-box"> <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop" class="parallax-img" alt="Project 3"> </div>
+                <div class="card-meta"> <div class="card-title hacker-text" data-value="CYBER 2077">CYBER 2077</div> <div class="card-cat">3D Art</div> </div>
             </div>
-             <div class="card">
-                <div class="card-image">PROJECT 04</div>
-                <div class="card-overlay">
-                    <div class="card-category">Packaging</div>
-                    <h3 class="card-title">Eco Coffee</h3>
-                </div>
+            <div class="card reveal hover-trigger">
+                <div class="img-box"> <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop" class="parallax-img" alt="Project 4"> </div>
+                <div class="card-meta"> <div class="card-title hacker-text" data-value="TECH CORE">TECH CORE</div> <div class="card-cat">Web</div> </div>
+            </div>
+            <div class="card reveal hover-trigger">
+                <div class="img-box"> <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=800&auto=format&fit=crop" class="parallax-img" alt="Project 5"> </div>
+                <div class="card-meta"> <div class="card-title hacker-text" data-value="DATA FLOW">DATA FLOW</div> <div class="card-cat">Dashboard</div> </div>
+            </div>
+            <div class="card reveal hover-trigger">
+                <div class="img-box"> <img src="https://images.unsplash.com/photo-1535378437321-33850884313d?q=80&w=800&auto=format&fit=crop" class="parallax-img" alt="Project 6"> </div>
+                <div class="card-meta"> <div class="card-title hacker-text" data-value="KINETIC">KINETIC</div> <div class="card-cat">Motion</div> </div>
             </div>
         </div>
     </section>
 
-    <section id="about" class="section">
-        <div class="about-section">
-            <div class="big-quote">
-                "设计不仅仅是外观，它是它是如何运作的。我们通过色彩与形式重新定义边界。"
+    <section id="gallery" class="gallery-section">
+        <div class="section-header reveal" style="margin-bottom: 3rem;">
+            <h2 class="section-title" style="font-size: 2.5rem;">Photographic Works</h2>
+            <a href="#" class="hover-trigger" style="color:#666; border-bottom: 1px solid #444;">View Archive ↗</a>
+        </div>
+
+        <div class="gallery-grid">
+            <div class="gallery-item reveal hover-trigger">
+                <a href="#">
+                    <div class="gallery-image-box">
+                        <img src="https://images.unsplash.com/photo-1517402636605-e36294d13c7c?q=80&w=600&auto=format&fit=crop" alt="Photo 1">
+                    </div>
+                    <div class="gallery-info">
+                        <div class="gallery-title" data-text="City Lights">City Lights</div>
+                        <div class="gallery-year">2025</div>
+                    </div>
+                </a>
             </div>
-            <div class="about-text">
-                <p>你好，我是 [你的名字]。受到赛车文化与现代极简主义的启发，我致力于创造具有视觉冲击力的数字体验。</p>
-                <p>在过去的五年里，我与初创公司和成熟品牌合作，帮助他们通过设计语言传达核心价值。无论是构建复杂的设计系统，还是制作令人难忘的品牌标识，我都追求极致的细节。</p>
-                <br>
-                <a href="#" class="btn">阅读更多</a>
+
+            <div class="gallery-item reveal hover-trigger">
+                <a href="#">
+                    <div class="gallery-image-box">
+                        <img src="https://images.unsplash.com/photo-1549419130-1c5c168285c5?q=80&w=600&auto=format&fit=crop" alt="Photo 2">
+                    </div>
+                    <div class="gallery-info">
+                       <div class="gallery-title" data-text="Abstract Motion">Abstract Motion</div>
+                        <div class="gallery-year">2024</div>
+                    </div>
+                </a>
             </div>
+            
+            <div class="gallery-item reveal hover-trigger">
+                <a href="#">
+                    <div class="gallery-image-box">
+                        <img src="https://images.unsplash.com/photo-1534008272520-cd4e76a16109?q=80&w=600&auto=format&fit=crop" alt="Photo 3">
+                    </div>
+                    <div class="gallery-info">
+                       <div class="gallery-title" data-text="The Track">The Track</div>
+                        <div class="gallery-year">2024</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="gallery-item reveal hover-trigger">
+                <a href="#">
+                    <div class="gallery-image-box">
+                        <img src="https://images.unsplash.com/photo-1534800361833-28929e0839e0?q=80&w=600&auto=format&fit=crop" alt="Photo 4">
+                    </div>
+                    <div class="gallery-info">
+                       <div class="gallery-title" data-text="Monochrome">Monochrome</div>
+                        <div class="gallery-year">2023</div>
+                    </div>
+                </a>
+            </div>
+
         </div>
     </section>
 
     <footer id="contact">
-        <div class="section-subtitle">Let's Talk</div>
-        <div class="footer-content">
-            <div class="footer-links">
-                <a href="#">Email Me ↗</a>
-                <a href="#">Instagram ↗</a>
-                <a href="#">Behance ↗</a>
-                <a href="#">WeChat ↗</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div>© 2024 DESIGNER NAME. ALL RIGHTS RESERVED.</div>
-            <div>
-                <a href="#">Privacy Policy</a> | <a href="#">Terms</a>
-            </div>
+        <p style="color:#666; margin-bottom:2rem;">READY TO COLLABORATE?</p>
+        <a href="mailto:hi@example.com" class="footer-link hover-trigger" data-text="Email Me ↗">Email Me ↗</a>
+        <a href="#" class="footer-link hover-trigger" data-text="Instagram ↗">Instagram ↗</a>
+        <div style="margin-top:5rem; color:#444; font-size:0.8rem;">
+            © 2025 DESIGNER PORTFOLIO.
         </div>
     </footer>
 
+    <script>
+        // --- 1. 开屏加载逻辑 ---
+        const preloader = document.getElementById('preloader');
+        const counter = document.getElementById('counter');
+        let count = 0;
+        
+        const timer = setInterval(() => {
+            count += Math.floor(Math.random() * 5) + 2;
+            if(count >= 100) {
+                count = 100;
+                clearInterval(timer);
+                setTimeout(() => {
+                    preloader.classList.add('hidden');
+                }, 200);
+            }
+            counter.innerText = count + '%';
+        }, 30);
+
+
+        // --- 2. 鼠标光标跟随 ---
+        const dot = document.querySelector('.cursor-dot');
+        const circle = document.querySelector('.cursor-circle');
+        let mouseX = 0, mouseY = 0;
+        let circleX = 0, circleY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            dot.style.left = mouseX + 'px';
+            dot.style.top = mouseY + 'px';
+        });
+
+        function animateCursor() {
+            circleX += (mouseX - circleX) * 0.15;
+            circleY += (mouseY - circleY) * 0.15;
+            circle.style.left = circleX + 'px';
+            circle.style.top = circleY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        document.querySelectorAll('.hover-trigger').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+        });
+
+
+        // --- 3. Hacker Text 解码特效 ---
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        document.querySelectorAll('.hacker-text').forEach(target => {
+            target.addEventListener('mouseenter', event => {
+                let iterations = 0;
+                const originalText = event.target.dataset.value;
+                const interval = setInterval(() => {
+                    event.target.innerText = originalText.split("")
+                        .map((letter, index) => {
+                            if(index < iterations) return originalText[index];
+                            return letters[Math.floor(Math.random() * letters.length)];
+                        })
+                        .join("");
+                    if(iterations >= originalText.length) clearInterval(interval);
+                    iterations += 1 / 3;
+                }, 30);
+            });
+        });
+
+
+        // --- 4. 磁性按钮 ---
+        const magneticBtn = document.querySelector('.magnetic-btn');
+        const magneticWrap = document.querySelector('.magnetic-wrap');
+
+        magneticWrap.addEventListener('mousemove', (e) => {
+            const pos = magneticWrap.getBoundingClientRect();
+            const x = e.clientX - pos.left - pos.width / 2;
+            const y = e.clientY - pos.top - pos.height / 2;
+            magneticBtn.style.transform = `translate(${x * 0.5}px, ${y * 0.5}px)`;
+        });
+
+        magneticWrap.addEventListener('mouseleave', () => {
+            magneticBtn.style.transform = 'translate(0px, 0px)';
+        });
+
+
+        // --- 5. 滚动入场 & 视差 (Reveal & Parallax) ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        const parallaxImages = document.querySelectorAll('.parallax-img');
+        window.addEventListener('scroll', () => {
+            parallaxImages.forEach(img => {
+                const container = img.parentElement;
+                const rect = container.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    const speed = 0.15; 
+                    const offset = (rect.top - window.innerHeight / 2) * speed;
+                    img.style.transform = `translateY(${offset}px)`;
+                }
+            });
+        });
+    </script>
 </body>
 </html>
