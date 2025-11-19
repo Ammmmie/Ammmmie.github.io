@@ -1,150 +1,429 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>甘晓然 — 作品集</title>
-<style>
-  
-:root{
-  --bg:#E8E5E3;--paper:#F7F5F3;--ink:#2F2B2A;--muted:#A59C96;
-  --radius:16px;font-family:'Inter','Noto Sans SC',sans-serif
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  background:var(--bg);color:var(--ink);
-  -webkit-font-smoothing:antialiased;font-size:1rem;
-  opacity:0;animation:fadeIn 1.2s ease forwards;
-  scroll-behavior:smooth;display:flex;flex-direction:column;min-height:100vh;
-}
-@keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
-header{
-  position:fixed;top:0;left:0;right:0;z-index:10;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:20px 60px;background:rgba(247,245,243,.85);backdrop-filter:blur(6px)
-}
-header h1{font-size:1.2rem}
-nav a{color:var(--muted);text-decoration:none;margin-left:28px;font-size:.9rem;transition:color .3s}
-nav a.active{color:var(--ink);font-weight:600}
-main{flex:1;width:100%;display:flex;flex-direction:column;scroll-snap-type:y mandatory;overflow-y:auto}
-section{
-  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
-  align-items:center;scroll-snap-align:start;padding:0 20px;
-  opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease
-}
-section.active{opacity:1;transform:translateY(0)}
-.intro{padding-top:0}
-.intro h2{
-  font-size:5rem;margin-bottom:24px;text-align:center;
-  animation:slideUp 1s ease forwards;transform:translateY(80px);opacity:0
-}
-.intro p{text-align:center;color:var(--muted);line-height:2;max-width:680px;margin:auto;margin-top:16px;opacity:0;animation:fadeInText 1s ease 0.5s forwards}
-@keyframes slideUp{to{transform:translateY(0);opacity:1}}
-@keyframes fadeInText{to{opacity:1}}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;width:100%;max-width:1200px}
-.card{
-  background:var(--paper);border-radius:14px;overflow:hidden;
-  box-shadow:0 8px 28px rgba(0,0,0,.04);transition:transform .36s ease;
-  width:100%;max-width:320px;margin:auto;padding:20px;display:flex;flex-direction:column;align-items:center;
-  text-align:center
-}
-.card:hover{transform:translateY(-8px)}
-.thumb{height:220px;width:100%;border-radius:12px;background:linear-gradient(135deg,#CBB7B0,#A9B6AA)}
-input,textarea,button{font-family:inherit}
-input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(47,43,42,.06);background:transparent;color:var(--ink);outline:none;margin-bottom:12px}
-textarea{min-height:140px}
-button{background:var(--ink);color:#fff;padding:10px 16px;border:none;border-radius:10px;cursor:pointer;font-weight:700}
-footer{text-align:center;padding:48px 20px;color:var(--muted);font-size:.8rem}
-.about,.contact{padding-top:80px;width:100%;display:flex;flex-direction:column;align-items:center;gap:28px}
-.about .card,.contact .card{max-width:640px}
-.contact .socials{display:flex;gap:16px;margin-top:12px;justify-content:center}
-@media(max-width:820px){header{padding:14px 20px}}
-.intro {
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;   
-  align-items:center;
-  padding-top:40vh;                /* 从顶部下移25%视口高度 */
-  padding-left:20px;
-  padding-right:20px;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设计师个人主页 | DESIGNER PORTFOLIO</title>
+    <style>
+        /* 全局重置与变量 */
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #ffffff;
+            --accent-color: #ccff00; /* 类似Lando的荧光绿 */
+            --secondary-text: #888888;
+            --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            --card-bg: #1a1a1a;
+        }
 
-</style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--accent-color);
+        }
+
+        /* 导航栏 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: var(--accent-color);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav ul li a {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        /* 汉堡菜单 (移动端隐藏，此处简化处理) */
+        .menu-toggle {
+            display: none;
+        }
+
+        /* Hero 区域 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0 5%;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 8rem); /* 响应式大字 */
+            line-height: 0.9;
+            text-transform: uppercase;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 span {
+            display: block;
+            -webkit-text-stroke: 1px var(--text-color);
+            color: transparent;
+        }
+        
+        .hero h1 span.filled {
+            -webkit-text-stroke: 0;
+            color: var(--text-color);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--secondary-text);
+            max-width: 500px;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: var(--accent-color);
+            color: #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            border-radius: 50px; /* 胶囊形状 */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(204, 255, 0, 0.4);
+            color: #000;
+        }
+
+        /* 滚动跑马灯 (类似 mclaren f1 since 2019) */
+        .marquee {
+            background-color: var(--accent-color);
+            color: #000;
+            padding: 1rem 0;
+            overflow: hidden;
+            white-space: nowrap;
+            transform: rotate(-2deg); /* 稍微倾斜增加动感 */
+            width: 105%;
+            margin-left: -2.5%;
+            margin-top: -50px;
+            margin-bottom: 50px;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+            font-weight: 900;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* 作品集部分 (Gallery/Grid) */
+        .section {
+            padding: 5rem 5%;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .section-subtitle {
+            color: var(--accent-color);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            position: relative;
+            aspect-ratio: 4/5; /* 竖向比例，类似海报 */
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            background-color: #333;
+            object-fit: cover;
+            /* 这里使用灰色占位，实际使用时替换为<img> */
+            background: linear-gradient(45deg, #222, #333);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 2rem;
+        }
+        
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-category {
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        /* 关于/简介部分 */
+        .about-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .big-quote {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .about-text p {
+            margin-bottom: 1.5rem;
+            color: #ccc;
+        }
+
+        /* 页脚 */
+        footer {
+            padding: 5rem 5%;
+            border-top: 1px solid #333;
+            margin-top: 5rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            display: block;
+            font-size: 4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 1;
+            color: #333;
+            -webkit-text-stroke: 1px #555;
+            transition: all 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+            -webkit-text-stroke: 0;
+            padding-left: 20px;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            .about-section {
+                grid-template-columns: 1fr;
+            }
+            .footer-links a {
+                font-size: 2.5rem;
+            }
+            nav {
+                display: none; /* 简单隐藏，实际项目需做汉堡菜单 */
+            }
+        }
+    </style>
 </head>
 <body>
-<header>
-  <h1>甘晓然</h1>
-  <nav>
-    <a href="#home" data-section="home" class="active">首页</a>
-    <a href="#works" data-section="works">作品</a>
-    <a href="#about" data-section="about">关于</a>
-    <a href="#contact" data-section="contact">联系</a>
-  </nav>
-</header>
 
-<main>
-  <!-- 首页 -->
-  <section id="home" class="intro active">
-    <h2>甘晓然</h2>
-    <p>用视觉的秩序整理感知的混沌，<br>以留白与线条之间的呼吸，描摹世界的温度。</p>
-  </section>
+    <header>
+        <div class="logo">Design<span>.LN</span></div>
+        <nav>
+            <ul>
+                <li><a href="#work">作品</a></li>
+                <li><a href="#about">关于</a></li>
+                <li><a href="#services">服务</a></li>
+                <li><a href="#contact">联系</a></li>
+            </ul>
+        </nav>
+    </header>
 
-  <!-- 作品 -->
-  <section id="works">
-    <h2 style="margin-bottom:24px">作品集</h2>
-    <div class="grid">
-      <a class="card"><div class="thumb"></div><h3>品牌标识设计</h3><p>从概念到系统，定义视觉语言。</p></a>
-      <a class="card"><div class="thumb" style="background:linear-gradient(135deg,#A9B6AA,#A2B3C2)"></div><h3>视觉规范</h3><p>完整品牌规范与应用案例。</p></a>
-      <a class="card"><div class="thumb" style="background:linear-gradient(135deg,#A2B3C2,#CBB7B0)"></div><h3>APP界面</h3><p>轻量布局与层次构建视觉节奏。</p></a>
-      <a class="card"><div class="thumb" style="background:linear-gradient(135deg,#E1D9D5,#BFB1AA)"></div><h3>Web平台</h3><p>响应式与可用性结合的交互系统。</p></a>
-      <a class="card"><div class="thumb" style="background:linear-gradient(135deg,#CBB7B0,#E1D9D5)"></div><h3>交互式展陈</h3><p>投影与物理空间视觉融合。</p></a>
-      <a class="card"><div class="thumb" style="background:linear-gradient(135deg,#A9B6AA,#CBB7B0)"></div><h3>快闪空间</h3><p>空间结构与材料表达品牌气质。</p></a>
+    <section class="hero">
+        <h1>
+            <span class="filled">Visual</span>
+            <span>Designer</span>
+            <span class="filled">& Art Director</span>
+        </h1>
+        <p>专注于品牌体验、数字交互与视觉创新的设计师。目前常驻上海，服务全球。</p>
+        <a href="#work" class="btn">查看作品</a>
+    </section>
+
+    <div class="marquee">
+        <div class="marquee-content">
+            CREATING SINCE 2020 • UI/UX DESIGN • BRANDING • MOTION GRAPHICS • CREATING SINCE 2020 • UI/UX DESIGN • BRANDING • MOTION GRAPHICS • 
+        </div>
     </div>
-  </section>
 
-  <!-- 关于 -->
-  <section id="about" class="about">
-    <div class="card"><h2>关于我</h2><p>专注<strong>视觉设计与空间叙事</strong>。相信设计力量在于秩序与留白平衡，让情感与理性共存。</p></div>
-    <div class="card"><h2>设计理念</h2><p>倡导“克制的美”为核心，让设计静默却有力。通过材料、光影与节奏，构建温柔而理性的视觉体验。保留人文温度是我的追求。</p></div>
-  </section>
+    <section id="work" class="section">
+        <div class="section-header">
+            <div>
+                <div class="section-subtitle">Selected Works</div>
+                <h2 class="section-title">精选案例</h2>
+            </div>
+            <a href="#" style="text-decoration: underline;">查看全部 →</a>
+        </div>
 
-  <!-- 联系 -->
-  <section id="contact" class="contact">
-    <div class="card">
-      <h2>联系我</h2>
-      <form id="form">
-        <input name="name" required placeholder="你的姓名">
-        <input name="email" type="email" required placeholder="邮箱">
-        <textarea name="message" required placeholder="请写下你的需求与联系方式"></textarea>
-        <button type="submit">发送</button>
-        <div id="status" style="margin-top:12px;color:var(--muted)"></div>
-      </form>
-      <p style="margin-top:20px;color:var(--muted)">邮箱：2208778230@qq.com</p>
-      <div class="socials">
-        <a href="https://www.xiaohongshu.com" target="_blank">小红书</a>
-        <a href="https://weibo.com" target="_blank">微博</a>
-      </div>
-    </div>
-  </section>
-</main>
+        <div class="grid">
+            <div class="card">
+                <div class="card-image">PROJECT 01</div> <div class="card-overlay">
+                    <div class="card-category">Branding</div>
+                    <h3 class="card-title">Neon Future</h3>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-image">PROJECT 02</div>
+                <div class="card-overlay">
+                    <div class="card-category">Web Design</div>
+                    <h3 class="card-title">Dark Mode UI</h3>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-image">PROJECT 03</div>
+                <div class="card-overlay">
+                    <div class="card-category">3D Art</div>
+                    <h3 class="card-title">Abstract Shapes</h3>
+                </div>
+            </div>
+             <div class="card">
+                <div class="card-image">PROJECT 04</div>
+                <div class="card-overlay">
+                    <div class="card-category">Packaging</div>
+                    <h3 class="card-title">Eco Coffee</h3>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<footer>© <span id="year"></span> 甘晓然</footer>
+    <section id="about" class="section">
+        <div class="about-section">
+            <div class="big-quote">
+                "设计不仅仅是外观，它是它是如何运作的。我们通过色彩与形式重新定义边界。"
+            </div>
+            <div class="about-text">
+                <p>你好，我是 [你的名字]。受到赛车文化与现代极简主义的启发，我致力于创造具有视觉冲击力的数字体验。</p>
+                <p>在过去的五年里，我与初创公司和成熟品牌合作，帮助他们通过设计语言传达核心价值。无论是构建复杂的设计系统，还是制作令人难忘的品牌标识，我都追求极致的细节。</p>
+                <br>
+                <a href="#" class="btn">阅读更多</a>
+            </div>
+        </div>
+    </section>
 
-<script>
-document.getElementById("year").textContent=new Date().getFullYear();
+    <footer id="contact">
+        <div class="section-subtitle">Let's Talk</div>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">Email Me ↗</a>
+                <a href="#">Instagram ↗</a>
+                <a href="#">Behance ↗</a>
+                <a href="#">WeChat ↗</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>© 2024 DESIGNER NAME. ALL RIGHTS RESERVED.</div>
+            <div>
+                <a href="#">Privacy Policy</a> | <a href="#">Terms</a>
+            </div>
+        </div>
+    </footer>
 
-// 导航滚动高亮
-const navLinks=document.querySelectorAll("nav a"),sections=document.querySelectorAll("main section");
-navLinks.forEach(a=>a.addEventListener("click",e=>{e.preventDefault();document.getElementById(a.dataset.section).scrollIntoView({behavior:'smooth'})}));
-window.addEventListener('scroll',()=>{let current='home';sections.forEach(s=>{if(s.getBoundingClientRect().top<=window.innerHeight/2) current=s.id});navLinks.forEach(n=>n.classList.remove('active'));document.querySelector(`nav a[data-section="${current}"]`).classList.add('active')});
-
-// 表单提交
-const form=document.getElementById("form"),status=document.getElementById("status");
-form.addEventListener("submit",async e=>{e.preventDefault();status.textContent="发送中...";try{await fetch("https://formsubmit.co/ajax/2208778230@qq.com",{method:"POST",body:new FormData(form)});status.textContent="发送成功！";form.reset()}catch{status.textContent="发送失败，请重试。"}});
-
-// section渐显
-sections.forEach((s,i)=>setTimeout(()=>s.classList.add('active'),100*i));
-</script>
 </body>
 </html>
